@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TasksFilter from './TasksFilter';
+import TasksFilter from './TasksFilter.jsx';
 
 const Footer = ({ count = 0, onClear, filterValueSelected }) => {
   return (

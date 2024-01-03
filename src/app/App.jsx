@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 import './App.css';
-import Footer from '../components/Footer';
-import TaskList from '../components/TaskList';
-import NewTaskForm from '../components/NewTaskForm';
+import Footer from '../components/Footer.jsx';
+import TaskList from '../components/TaskList.jsx';
+import NewTaskForm from '../components/NewTaskForm.jsx';
 
 function App() {
   const [data, editData] = useState({

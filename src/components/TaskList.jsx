@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Task from './Task';
+import Task from './Task.jsx';
 
 const TaskList = ({ toDo, onDeleted, onToggleDone, onToggleEdit, editLabel, startTimer, pauseTimer }) => {
   const elements = toDo.map((item) => {
