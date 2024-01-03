@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import './app.css';
 import Footer from '../components/Footer';
@@ -10,15 +10,22 @@ function App() {
     todoData: [],
   });
   const [filter, editFilter] = useState('all');
+  const [timer, setTimer] = useState(false);
   const { todoData } = data;
+  const ref = useRef();
 
-  function createTodoItem(label) {
+  useEffect(() => {
+    ref.current = 1;
+  }, []);
+  function createTodoItem(label, min, sec) {
     return {
       label,
       done: false,
       edit: false,
       id: Math.random().toString(36).slice(2),
       date: new Date(),
+      minutes: min,
+      seconds: sec,
     };
   }
   const deleteItem = (id) => {
@@ -29,8 +36,8 @@ function App() {
       };
     });
   };
-  const addItem = (text) => {
-    const newItem = createTodoItem(text);
+  const addItem = (label, min, sec) => {
+    const newItem = createTodoItem(label, min, sec);
     editData(({ todoData }) => ({
       todoData: [...todoData, newItem],
     }));
@@ -78,19 +85,65 @@ function App() {
   );
   const doneCount = todoData.filter((el) => el.done).length;
   const todoCount = todoData.length - doneCount;
+
+  const startTimer = (id) => {
+    clearInterval(ref.current);
+    setTimer(false);
+
+    if (!timer) {
+      setTimer(true);
+      ref.current = setInterval(() => {
+        editData(({ todoData }) => {
+          const idx = todoData.findIndex((el) => el.id === id);
+          if (idx === -1) {
+            clearInterval(ref.current);
+            setTimer(false);
+            return {
+              todoData: [...todoData],
+            };
+          }
+
+          let oldItem = todoData[idx];
+          let newItem = { ...oldItem, seconds: oldItem.seconds - 1 };
+
+          if (newItem.seconds < 0) {
+            newItem = { ...newItem, minutes: oldItem.minutes - 1, seconds: 59 };
+          }
+          if (newItem.minutes < 0) {
+            clearInterval(ref.current);
+            setTimer(false);
+            return {
+              todoData: [...todoData],
+            };
+          }
+
+          return {
+            todoData: [...todoData.slice(0, idx), newItem, ...todoData.slice(idx + 1)],
+          };
+        });
+      }, 1000);
+    }
+  };
+  const pauseTimer = () => {
+    clearInterval(ref.current);
+    setTimer(false);
+  };
+
   return (
     <section className="todoapp">
       <NewTaskForm onItemAdded={addItem} />
-      <div className="main">
+      <section className="main">
         <TaskList
           toDo={filteredTaskList}
           onDeleted={deleteItem}
           onToggleDone={onToggleDone}
           onToggleEdit={onToggleEdit}
           editLabel={editLabel}
+          startTimer={startTimer}
+          pauseTimer={pauseTimer}
         />
         <Footer count={todoCount} onClear={clearCompleted} filterValueSelected={onFilterTasks} />
-      </div>
+      </section>
     </section>
   );
 }

@@ -3,7 +3,21 @@ import { formatDistanceToNow } from 'date-fns';
 import PropTypes from 'prop-types';
 
 const Task = (props) => {
-  const { label, onDeleted, onToggleDone, done, date, onToggleEdit, edit, id, editLabel } = props;
+  const {
+    label,
+    onDeleted,
+    onToggleDone,
+    done,
+    date,
+    onToggleEdit,
+    edit,
+    id,
+    editLabel,
+    minutes,
+    seconds,
+    startTimer,
+    pauseTimer,
+  } = props;
   const [taskName, editTaskName] = useState(label);
   const onLabelChange = (evt) => editTaskName(evt.target.value);
   const onSubmitLabelEdit = (evt) => {
@@ -16,8 +30,13 @@ const Task = (props) => {
       <div className="view">
         <input className="toggle" checked={done} type="checkbox" onChange={onToggleDone} />
         <label>
-          <span className="description">{label}</span>
-          <span className="created">
+          <span className="title">{label}</span>
+          <span className="description">
+            <button className="icon icon-play" type="button" aria-label="Start timer" onClick={startTimer} />
+            <button className="icon icon-pause" type="button" aria-label="Pause timer" onClick={pauseTimer} />
+            {minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+          </span>
+          <span className="description">
             created{' '}
             {formatDistanceToNow(date, {
               includeSeconds: true,
