@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import './app.css';
+import './App.css';
 import Footer from '../components/Footer';
 import TaskList from '../components/TaskList';
 import NewTaskForm from '../components/NewTaskForm';
