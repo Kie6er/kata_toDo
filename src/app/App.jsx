@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { nanoid } from 'nanoid';
 
 import './App.css';
 import Footer from '../components/Footer.jsx';
@@ -22,7 +23,7 @@ function App() {
       label,
       done: false,
       edit: false,
-      id: Math.random().toString(36).slice(2),
+      id: nanoid(),
       date: new Date(),
       minutes: min,
       seconds: sec,
@@ -87,41 +88,35 @@ function App() {
   const todoCount = todoData.length - doneCount;
 
   const startTimer = (id) => {
-    clearInterval(ref.current);
-    setTimer(false);
-
     if (!timer) {
       setTimer(true);
       ref.current = setInterval(() => {
         editData(({ todoData }) => {
           const idx = todoData.findIndex((el) => el.id === id);
           if (idx === -1) {
-            clearInterval(ref.current);
-            setTimer(false);
+            pauseTimer();
             return {
               todoData: [...todoData],
             };
           }
-
           let oldItem = todoData[idx];
           let newItem = { ...oldItem, seconds: oldItem.seconds - 1 };
-
           if (newItem.seconds < 0) {
             newItem = { ...newItem, minutes: oldItem.minutes - 1, seconds: 59 };
           }
           if (newItem.minutes < 0) {
-            clearInterval(ref.current);
-            setTimer(false);
+            pauseTimer();
             return {
               todoData: [...todoData],
             };
           }
-
           return {
             todoData: [...todoData.slice(0, idx), newItem, ...todoData.slice(idx + 1)],
           };
         });
       }, 1000);
+    } else {
+      return null;
     }
   };
   const pauseTimer = () => {
