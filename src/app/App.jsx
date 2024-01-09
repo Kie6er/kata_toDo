@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
 
 import './App.css';
@@ -11,13 +11,8 @@ function App() {
     todoData: [],
   });
   const [filter, editFilter] = useState('all');
-  const [timer, setTimer] = useState(false);
   const { todoData } = data;
-  const ref = useRef();
 
-  useEffect(() => {
-    ref.current = 1;
-  }, []);
   function createTodoItem(label, min, sec) {
     return {
       label,
@@ -87,55 +82,17 @@ function App() {
   const doneCount = todoData.filter((el) => el.done).length;
   const todoCount = todoData.length - doneCount;
 
-  const startTimer = (id) => {
-    if (!timer) {
-      setTimer(true);
-      ref.current = setInterval(() => {
-        editData(({ todoData }) => {
-          const idx = todoData.findIndex((el) => el.id === id);
-          if (idx === -1) {
-            pauseTimer();
-            return {
-              todoData: [...todoData],
-            };
-          }
-          let oldItem = todoData[idx];
-          let newItem = { ...oldItem, seconds: oldItem.seconds - 1 };
-          if (newItem.seconds < 0) {
-            newItem = { ...newItem, minutes: oldItem.minutes - 1, seconds: 59 };
-          }
-          if (newItem.minutes < 0) {
-            pauseTimer();
-            return {
-              todoData: [...todoData],
-            };
-          }
-          return {
-            todoData: [...todoData.slice(0, idx), newItem, ...todoData.slice(idx + 1)],
-          };
-        });
-      }, 1000);
-    } else {
-      return null;
-    }
-  };
-  const pauseTimer = () => {
-    clearInterval(ref.current);
-    setTimer(false);
-  };
-
   return (
     <section className="todoapp">
       <NewTaskForm onItemAdded={addItem} />
       <section className="main">
         <TaskList
+          editData={editData}
           toDo={filteredTaskList}
           onDeleted={deleteItem}
           onToggleDone={onToggleDone}
           onToggleEdit={onToggleEdit}
           editLabel={editLabel}
-          startTimer={startTimer}
-          pauseTimer={pauseTimer}
         />
         <Footer count={todoCount} onClear={clearCompleted} filterValueSelected={onFilterTasks} />
       </section>
